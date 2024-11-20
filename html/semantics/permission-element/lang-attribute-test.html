@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf-8>
+<link rel="help" href="https://github.com/WICG/PEPC/blob/main/explainer.md#locking-the-pepc-style">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+  <div id="el1" lang="en">
+    <div id="el2" lang="en">
+      <div id="el3">
+        <permission id="permission-element" type="geolocation" style="width:fit-content"/>
+      </div>
+    </div>
+  </div>
+
+<script>
+  promise_test(async() => {
+    var permission_element = document.getElementById("permission-element");
+    var initial_width = permission_element.offsetWidth;
+    var outer_lang_div = document.getElementById("el1");
+    var inner_lang_div = document.getElementById("el2");
+
+    // Change lang attribute of the outer div.
+    outer_lang_div.lang = "de";
+    // Changing the lang of the outer div should not have any effect as it is
+    // shadowed by the inner div.
+    assert_equals(initial_width, permission_element.offsetWidth);
+
+    // Change lang attribute of the inner div.
+    inner_lang_div.lang = "de";
+    // The width of the permission element should change due to the changed text.
+    assert_not_equals(initial_width, permission_element.offsetWidth);
+  }, "Permission element should dynamically change text when the lang \
+      attribute changes")
+</script>
+</body>
+</html>
